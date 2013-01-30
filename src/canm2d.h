@@ -250,6 +250,7 @@ public:
 	QString getData() { return m_Data; }
 
 private:
+	QString makeLabelString(QString qs);
 	void addString(QString str, int tab=0);
 
 private:

@@ -1663,7 +1663,7 @@ bool CAnm2DAsm::makeFromEditData(CEditData &rEditData)
 
 void CAnm2DAsm::makeFromEditData2IncTip(QString qsLabel, ObjectItem *pObj)
 {
-	QString	qsTmp = qsLabel + pObj->getName().replace(" ", "_").toUpper().toUtf8();
+	QString	qsTmp = qsLabel + makeLabelString(pObj->getName());
 	bool	isAscii = true;
 	for(QChar *pszData=qsTmp.data(); *pszData!='\0'; pszData++){
 		if(*pszData >= 0x80){
@@ -1710,14 +1710,14 @@ bool CAnm2DAsm::makeFromEditData2Inc(CEditData &rEditData, QString qsFname)
 	addString("\n");
 	for(int i=0; i<pRoot->childCount(); i++){
 		ObjectItem	*pObj = pRoot->child(i);
-		addString("%define\t\tACO_" + qsFname + "__" + pObj->getName().replace(" ", "_").toUpper().toUtf8() + QString("\t\t%1").arg(i) + "\n");
+		addString("%define\t\tACO_" + qsFname + "__" + makeLabelString(pObj->getName()) + QString("\t\t%1").arg(i) + "\n");
 	}
 	addString("\n");
 	for(int i=0; i<pRoot->childCount(); i++){
 		ObjectItem	*pObj = pRoot->child(i);
 		QVector4D	qv4AreaMin = QVector4D(FLT_MAX, FLT_MAX, FLT_MAX, 0);
 		QVector4D	qv4AreaMax = QVector4D(FLT_MIN, FLT_MIN, FLT_MIN, 0);
-		QString		qsLabel = "ACL_" + qsFname + "__" + pObj->getName().replace(" ", "_").toUpper().toUtf8() + "__";
+		QString		qsLabel = "ACL_" + qsFname + "__" + makeLabelString(pObj->getName()) + "__";
 		addString("%define\t\t" + qsLabel + "ROOT\t\t0\n");
 		makeFromEditDataArea(pObj, &qv4AreaMin, &qv4AreaMax, true);
 		addString("\t\t; Area:" + QString("(%1, %2, %3)-(%4, %5, %6) size:(%7, %8, %9)")
@@ -1733,6 +1733,16 @@ bool CAnm2DAsm::makeFromEditData2Inc(CEditData &rEditData, QString qsFname)
 	}
 
 	return true;
+}
+
+QString CAnm2DAsm::makeLabelString(QString qs)
+{
+	qs = qs.toUtf8();
+	qs = qs.replace(" ", "_");
+	qs = qs.replace("-", "_");
+	qs = qs.toUpper();
+	
+	return qs;
 }
 
 void CAnm2DAsm::addString(QString str, int tab)
